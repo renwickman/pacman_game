@@ -1,0 +1,248 @@
+<html>
+<head>
+    <title>PacMan</title>
+    <style type="text/css">
+  * {
+			margin: 0;
+			padding: 0;
+		}
+		.row {
+			line-height: 0;
+		}
+		.wall {
+			background-color: blue;
+			height: 40px; 
+			width: 40px;
+			display: inline-block;
+		}
+		.cherry {
+			background-color: black;
+			height: 40px; 
+			width: 40px;
+			display: inline-block;
+			background-image: url('cherry.png');
+			background-size: contain;
+		}
+		.blue_ghost {
+			background-color: black;
+			height: 40px; 
+			width: 40px;
+			display: inline-block;
+			background-image: url('blue_ghost.gif');
+			background-size: contain;
+		}
+        .orange_ghost {
+			background-color: black;
+			height: 40px; 
+			width: 40px;
+			display: inline-block;
+			background-image: url('orange_ghost.gif');
+			background-size: contain;
+		}
+        .pink_ghost {
+			background-color: black;
+			height: 40px; 
+			width: 40px;
+			display: inline-block;
+			background-image: url('pink_ghost.gif');
+			background-size: contain;
+		}
+		.red_ghost {
+			background-color: black;
+			height: 40px; 
+			width: 40px;
+			display: inline-block;
+			background-image: url('red_ghost.gif');
+			background-size: contain;
+		}
+		.blank {
+			background-color: black;
+			height: 40px; 
+			width: 40px;
+			display: inline-block;
+		}
+		#pacman {
+			background-color: black;
+			height: 40px; 
+			width: 40px;
+			display: inline-block;
+			background-image: url('img/pacman_right.gif');
+			background-size: contain;
+			position: absolute;
+			left: 40px;
+			top: 40px;
+		}
+    </style>
+</head>
+<body>
+
+    <div id='world'></div>
+        <div id ='pacman'></div>
+        <div id ='score'>Score: </div>
+        <div id ='lives'>Lives Remaining: </div>
+</body>
+<script type="text/javascript">
+
+	var direction = 'right';
+
+	// function update(){
+    //             document.getElementById("pacman").style.left = leftValue+"px";
+    //             document.getElementById("pacman").style.top = topValue+"px";
+    //         }
+
+    var world = [
+        [1, 1, 0, 2, 1],
+        [1, 6, 2, 0, 1],
+        [1, 2, 5, 0, 1],
+        [1, 0, 0, 0, 1],
+        [1, 0, 3, 0, 1],
+        [1, 1, 6, 0, 1],
+        [1, 2, 0, 0, 1],
+        [1, 0, 0, 0, 3],
+        [1, 2, 0, 0, 1],
+        [1, 0, 0, 2, 1],
+        [1, 6, 0, 1, 1]
+    ];
+
+    function randomize(world) {
+        var index = world.length;
+        while (0 !== index) {
+            var random = Math.floor(Math.random() * index);
+            index -= 1;
+
+    var temp = world[index];
+    world[index] = world[random];
+    world[random] = temp;
+    }
+    return world;
+    }
+
+        randomize(world)
+
+        var worldDict = {
+		0: 'blank',
+		1: 'wall',
+		2: 'cherry',
+		3: 'pink_ghost',
+		4: 'orange_ghost',
+		5: 'blue_ghost',
+		6: 'red_ghost',
+	}
+
+    function drawWorld(){
+		output = "";
+
+		for(var row = 0; row < world.length; row++){
+			output += "<div class = 'row'>"
+			for(var x = 0; x < world[row].length; x++){
+				output += "<div class = '" + worldDict[world[row][x]] +"'></div>"
+		}
+		output+="</div>"
+	}
+
+		document.getElementById('world').innerHTML = output;
+			}
+		drawWorld();
+    
+    var pacman = {
+			x: 1,
+			y: 1,
+			score: 0,
+			lives: 3
+		}
+
+    function drawPacman() {
+        document.getElementById("pacman").style.left = pacman.x * 40 +"px";
+        document.getElementById("pacman").style.top = pacman.y * 40+ "px";
+		document.getElementById('pacman').style.backgroundImage = "url('img/"+"pacman_"+direction+".gif')";
+    }
+    drawPacman()
+
+    document.onkeydown = function(e){
+        if (e.keyCode == 37){
+            if(world[pacman.y][pacman.x - 1] !=1){
+				// leftValue = leftValue - 40;
+            	pacman.x--;
+				direction = 'left';
+            }
+        }
+        if (e.keyCode == 38){
+            if(world[pacman.y - 1][pacman.x] != 1){
+				// topValue = topValue - 40;
+            	pacman.y--;
+				direction = "up";
+            }
+        }
+        if (e.keyCode == 39){
+            if(world[pacman.y][pacman.x + 1] != 1){
+				// leftValue = leftValue + 40;  
+            	pacman.x++;
+				direction = 'right';
+            }
+        }
+        if (e.keyCode == 40){
+            if(world[pacman.y + 1][pacman.x] != 1){
+				// topValue = topValue + 40;
+            	pacman.y++;
+				direction = 'down';
+        	}
+		}
+		
+
+    if (world[pacman.y][pacman.x] == 2) {
+        pacman.score += 50;
+        world[pacman.y][pacman.x] = 0;
+        }
+    
+    if (world[pacman.y][pacman.x] == 3 || world[pacman.y][pacman.x] == 4 || world[pacman.y][pacman.x] == 5 || world[pacman.y][pacman.x] == 6) {
+		window.alert('Life Lost!');
+		randomize(world);
+		pacman.lives -= 1;
+            if(pacman.lives == 0){
+                window.alert('Game Over!');
+                document.write("Final Score: " + pacman.score);
+			}
+		}
+
+drawPacman()
+drawWorld()
+document.getElementById("score").innerHTML = "Score: " + pacman.score;
+document.getElementById("lives").innerHTML = "Lives Remaining: " + pacman.lives;
+}
+
+</script>
+</html>
+
+<!-- 
+<html>
+    <body>
+        <div id='background'>
+            <div id='character' style='position:absolute; top:100px; left:450px; background-image: url("img/down1.png"); width:59px; height:86px;'></div>
+        </div>
+        <script type="text/javascript">
+            var leftValue = 450, topValue = 100;
+            function update(){
+                document.getElementById("character").style.left = leftValue+"px";
+                document.getElementById("character").style.top = topValue+"px";
+            }
+            document.onkeydown = function(e) {
+                console.log('e: ', e); 
+                console.log('e.keyCode: ', e.keyCode);
+                if (e.keyCode == 37 && leftValue > 0) { // LEFT
+                    leftValue = leftValue - 10;
+                }
+                else if (e.keyCode == 39 && leftValue < 500) { // RIGHT
+                    leftValue = leftValue + 10;         
+                }
+                else if (e.keyCode == 40 && topValue < 500) { // DOWN
+                    topValue = topValue + 10;
+                }
+                else if (e.keyCode == 38 && topValue > 0) {// UP
+                    topValue = topValue - 10;
+                }
+                update();
+            }
+        </script>
+    </body>
+    </html>
+     -->
